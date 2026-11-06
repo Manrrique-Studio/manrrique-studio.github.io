@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+<!-- Google tag (GA4) -->
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-MF9NV4W9"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="google-site-verification" content="xj_RpVGRBEnbwJgJbhbkQez0IffLZ58lbR9uL2xgzSQ">
@@ -21,7 +28,6 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Person","name":"Rianderson Manrrique","alternateName":"Rian Manrrique","jobTitle":"Supervisor de Marketing | IA e Automação","address":{"@type":"PostalAddress","addressLocality":"São José dos Campos","addressRegion":"SP","addressCountry":"BR"},"url":"https://manrrique-studio.github.io/","sameAs":["https://www.linkedin.com/in/rianderson-manrrique/"],"knowsAbout":["Agentes de IA","Automação de processos","n8n","Zoho CRM","Growth Marketing","Meta Ads","Google Ads","SQL","Python"]}
 </script>
-<!-- Analytics: cole aqui o snippet do GA4 ou Microsoft Clarity -->
 <style>
 :root{
   --ink:#07050D; --panel:#0F0A1A; --panel-2:#160F26; --line:#2A2140; --line-2:#3A2E58;
@@ -643,6 +649,30 @@ function add(){
   log.appendChild(d);while(log.children.length>6)log.removeChild(log.firstChild);i++;
 }
 if(reduce){for(let n=0;n<6;n++)add()}else{add();setInterval(add,1000)}
+
+// ── rastreamento GA4 ──
+function track(name,params){try{gtag('event',name,params||{})}catch(_){}}
+function zone(el){const s=el.closest('section[id],header,footer,section');return s?(s.id||s.className.split(' ')[0]||s.tagName.toLowerCase()):'page'}
+document.addEventListener('click',e=>{
+  const a=e.target.closest('a');if(!a)return;
+  const h=a.getAttribute('href')||'';const where=zone(a);
+  if(h.includes('wa.link'))track('generate_lead',{contact_method:'whatsapp',link_location:where});
+  else if(h.startsWith('tel:'))track('generate_lead',{contact_method:'telefone',link_location:where});
+  else if(h.includes('linkedin.com'))track('generate_lead',{contact_method:'linkedin',link_location:where});
+  else if(h.includes('wixstudio.com'))track('portfolio_design_click',{link_location:where});
+  else if(h.startsWith('#'))track('nav_click',{target:h.slice(1)||'top',link_location:where});
+});
+ce.addEventListener('click',()=>track('generate_lead',{contact_method:'email_copiado',link_location:'contato'}));
+document.querySelectorAll('.case details').forEach(d=>d.addEventListener('toggle',()=>{
+  if(d.open)track('case_open',{case_name:d.closest('.case').querySelector('h3').textContent.trim()});
+}));
+if('IntersectionObserver' in window){
+  const seen=new Set();
+  const io=new IntersectionObserver(es=>es.forEach(en=>{
+    if(en.isIntersecting&&!seen.has(en.target.id)){seen.add(en.target.id);track('section_view',{section_name:en.target.id});}
+  }),{threshold:.35});
+  ['ia','servicos','projetos','sobre','contato'].forEach(id=>{const el=document.getElementById(id);if(el)io.observe(el)});
+}
 </script>
 </body>
 </html>
