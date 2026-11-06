@@ -179,6 +179,19 @@ details .key li{color:var(--muted);font-size:15px}
 @media(max-width:1020px){.ai-grid{grid-template-columns:1fr}.ai-card.big{grid-row:auto}}
 @media(max-width:760px){.ai-in{padding:24px 22px}.ai-card.big h3,.ai-in h3{font-size:28px}}
 
+
+/* vortex + process animation */
+#vortex{position:absolute;right:-140px;top:-90px;width:860px;height:860px;opacity:.55;pointer-events:none;z-index:0;mask-image:radial-gradient(circle,#000 35%,transparent 70%);-webkit-mask-image:radial-gradient(circle,#000 35%,transparent 70%)}
+.proc-stage{position:relative;border:1px solid var(--line-2);border-radius:14px;background:linear-gradient(180deg,rgba(7,5,13,.6),rgba(22,15,38,.6));height:260px;margin-bottom:8px;overflow:hidden}
+.proc-stage canvas{width:100%;height:100%;display:block}
+.proc-tag{position:absolute;left:18px;top:14px;font:500 13px var(--mono);color:var(--muted)}
+.proc-tag b{color:#FFC2E0;font-weight:500}
+.step .n,.step h3{transition:color .4s,-webkit-text-stroke-color .4s}
+.step.on .n{-webkit-text-stroke-color:var(--magenta)}
+.step.on h3{color:#FFC2E0}
+@media(max-width:1020px){#vortex{width:620px;height:620px;right:-260px;top:-60px;opacity:.35}}
+@media(max-width:760px){.proc-stage{height:220px}}
+
 /* about */
 .about .wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:72px;align-items:center}
 .photo{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--line-2)}
@@ -281,6 +294,7 @@ footer a:hover{color:var(--text)}
 <main id="top">
 
 <section class="hero">
+  <canvas id="vortex" aria-hidden="true"></canvas>
   <div class="wrap">
     <div>
       <p class="kicker"><span class="live" aria-hidden="true"></span>Supervisor de Marketing, especialista em IA e automação</p>
@@ -419,6 +433,7 @@ footer a:hover{color:var(--text)}
       <h2>Organização antes de automação</h2>
       <p>Automatizar um processo bagunçado só acelera a bagunça. Por isso todo projeto segue a mesma ordem.</p>
     </div>
+    <div class="proc-stage" aria-hidden="true"><span class="proc-tag">etapa: <b id="proc-label">mapear</b></span><canvas id="proc"></canvas></div>
     <div class="steps">
       <div class="step"><div class="n" aria-hidden="true">01</div><h3>Mapear</h3><p>Entendo como a operação funciona hoje, onde o lead se perde e onde o time faz trabalho repetido.</p></div>
       <div class="step"><div class="n" aria-hidden="true">02</div><h3>Estruturar</h3><p>Desenho o funil, as etapas e as regras no CRM, com responsáveis e prazos claros.</p></div>
@@ -649,6 +664,68 @@ function add(){
   log.appendChild(d);while(log.children.length>6)log.removeChild(log.firstChild);i++;
 }
 if(reduce){for(let n=0;n<6;n++)add()}else{add();setInterval(add,1000)}
+
+
+// ── fundo animado (espiral da marca) ──
+(function(){
+  const c=document.getElementById('vortex');if(!c)return;const x=c.getContext('2d');let W,H,run=true,vis=true;
+  function size(){const r=c.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);W=c.width=r.width*d;H=c.height=r.height*d}
+  size();addEventListener('resize',size);
+  const arcs=[...Array(9)].map((_,i)=>({r:.12+i*.042,w:.018+i*.003,len:1.1+((i*37)%5)*.12,sp:.12+((i*53)%7)*.025,off:i*.75}));
+  function frame(t){
+    if(!(run&&vis))return;
+    x.clearRect(0,0,W,H);const cx=W/2,cy=H/2,m=Math.min(W,H);x.globalCompositeOperation='lighter';
+    arcs.forEach((a,i)=>{
+      const ang=a.off+(reduce?0:t*.001*a.sp);const g=x.createLinearGradient(cx-m*a.r,cy-m*a.r,cx+m*a.r,cy+m*a.r);
+      g.addColorStop(0,'rgba(138,77,255,.0)');g.addColorStop(.5,`rgba(138,77,255,${.35+i*.03})`);g.addColorStop(1,`rgba(255,46,151,${.45})`);
+      x.strokeStyle=g;x.lineWidth=m*a.w;x.lineCap='round';x.beginPath();x.arc(cx,cy,m*a.r,ang,ang+a.len*Math.PI);x.stroke();
+    });
+    x.globalCompositeOperation='source-over';
+    if(!reduce)requestAnimationFrame(frame);
+  }
+  if('IntersectionObserver' in window)new IntersectionObserver(e=>{vis=e[0].isIntersecting;if(vis)requestAnimationFrame(frame)}).observe(c);
+  document.addEventListener('visibilitychange',()=>{run=!document.hidden;if(run)requestAnimationFrame(frame)});
+  requestAnimationFrame(frame);
+})();
+
+// ── animação do processo: caos → funil → fluxo ──
+(function(){
+  const c=document.getElementById('proc');if(!c)return;const x=c.getContext('2d');
+  const steps=[...document.querySelectorAll('.process .step')],label=document.getElementById('proc-label');
+  const names=['mapear','estruturar','automatizar e medir'],cols=['Lead','Qualificado','Proposta','Venda'];
+  let W,H,d,vis=false,start=null,phase=-1;
+  function size(){const r=c.getBoundingClientRect();d=Math.min(devicePixelRatio||1,2);W=c.width=r.width*d;H=c.height=r.height*d}
+  size();addEventListener('resize',size);
+  const N=56,P=[...Array(N)].map((_,i)=>({x:Math.random(),y:Math.random(),wx:Math.random(),wy:Math.random(),col:i%4,row:Math.floor(i/4),lane:i%7,v:.0016+Math.random()*.0018,fx:Math.random()}));
+  const pad=()=>({l:.08,r:.92,t:.24,b:.82});
+  function setPhase(k){if(k===phase)return;phase=k;steps.forEach((s,i)=>s.classList.toggle('on',i===k));label.textContent=names[k];
+    if(k===2)P.forEach(p=>p.fx=(p.col+Math.random()*.6)/4)}
+  function draw(t){
+    if(!vis)return;if(start===null)start=t;const T=((t-start)/1000)%10.5;const k=reduce?2:(T<3.5?0:T<6.5?1:2);setPhase(k);
+    x.clearRect(0,0,W,H);const b=pad(),px=v=>(b.l+(b.r-b.l)*v)*W,py=v=>(b.t+(b.b-b.t)*v)*H;
+    // colunas do funil
+    const ca=k===0?0:1;
+    cols.forEach((n,i)=>{const cx=px((i+.5)/4);x.globalAlpha=.9*ca;x.strokeStyle='rgba(58,46,88,1)';x.lineWidth=d;x.beginPath();x.moveTo(cx,py(-.05));x.lineTo(cx,py(1.05));x.stroke();
+      x.fillStyle='#8178A3';x.font=`500 ${12*d}px "Geist Mono",monospace`;x.textAlign='center';x.fillText(n,cx,H-14*d)});
+    if(k===2){x.globalAlpha=.5;for(let l=0;l<7;l++){const y=py(l/6);x.strokeStyle='rgba(138,77,255,.25)';x.beginPath();x.moveTo(px(0),y);x.lineTo(px(1),y);x.stroke()}}
+    x.globalAlpha=1;
+    P.forEach(p=>{
+      let tx,ty;
+      if(k===0){if(Math.random()<.01){p.wx=Math.random();p.wy=Math.random()}tx=p.wx;ty=p.wy}
+      else if(k===1){tx=(p.col+.5)/4+((p.row%2)-.5)*.05;ty=(p.row+.5)/14}
+      else{p.fx+=p.v;if(p.fx>1){p.fx=0;p.x=0}tx=p.fx;ty=p.lane/6}
+      const e=k===2?.25:.06;p.x+=(tx-p.x)*e;p.y+=(ty-p.y)*e;
+      const prog=k===2?p.x:(k===1?p.col/3:.2);
+      const r=Math.round(138+(255-138)*prog),g=Math.round(77+(46-77)*prog),bl=Math.round(255+(151-255)*prog);
+      const done=k===2&&p.x>.86;x.fillStyle=done?'#3DF5A0':`rgb(${r},${g},${bl})`;
+      x.shadowColor=x.fillStyle;x.shadowBlur=(done?14:8)*d;x.beginPath();x.arc(px(p.x),py(p.y),(done?3.6:3)*d,0,Math.PI*2);x.fill();
+    });
+    x.shadowBlur=0;
+    if(!reduce)requestAnimationFrame(draw);
+  }
+  if('IntersectionObserver' in window)new IntersectionObserver(e=>{const was=vis;vis=e[0].isIntersecting;if(vis&&!was)requestAnimationFrame(draw)},{threshold:.2}).observe(c);
+  else{vis=true;requestAnimationFrame(draw)}
+})();
 
 // ── rastreamento GA4 ──
 function track(name,params){try{gtag('event',name,params||{})}catch(_){}}
