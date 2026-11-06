@@ -154,6 +154,25 @@ details[open] summary::after{transform:rotate(45deg)}
 details .key{margin-top:16px}
 details .key li{color:var(--muted);font-size:15px}
 
+
+/* ai projects */
+.ai{background:radial-gradient(ellipse 60% 50% at 15% 0%,rgba(138,77,255,.14),transparent 70%)}
+.ai-grid{display:grid;grid-template-columns:1.25fr 1fr;grid-template-rows:auto auto;gap:20px}
+.ai-card{border:1px solid var(--line-2);border-radius:14px;background:var(--panel);display:flex;flex-direction:column;overflow:hidden}
+.ai-card.big{grid-row:span 2}
+.ai-top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--line);font:400 13px var(--mono);color:var(--dim)}
+.status{font:500 12.5px var(--mono);color:#3DF5A0;display:inline-flex;align-items:center;gap:8px}
+.status::before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor}
+.status.dev{color:#FFC86B}
+.ai-in{padding:30px 30px 32px;display:flex;flex-direction:column;gap:18px;flex:1}
+.ai-in h3{font-family:var(--display);font-weight:700;font-size:30px;line-height:1.05}
+.ai-card.big h3{font-size:38px}
+.ai-in>p{color:var(--muted)}
+.ai-in .key li{font-size:15.5px}
+.ai-in .tools{margin-top:auto;padding-top:6px}
+@media(max-width:1020px){.ai-grid{grid-template-columns:1fr}.ai-card.big{grid-row:auto}}
+@media(max-width:760px){.ai-in{padding:24px 22px}.ai-card.big h3,.ai-in h3{font-size:28px}}
+
 /* about */
 .about .wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:72px;align-items:center}
 .photo{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--line-2)}
@@ -236,6 +255,7 @@ footer a:hover{color:var(--text)}
   <div class="wrap">
     <a href="#top" class="brand"><img src="mark.webp" alt="" width="34" height="34">Rian Manrrique</a>
     <nav class="nav-links" aria-label="Principal">
+      <a href="#ia">IA</a>
       <a href="#servicos">Competências</a>
       <a href="#projetos">Projetos</a>
       <a href="#sobre">Sobre</a>
@@ -244,6 +264,7 @@ footer a:hover{color:var(--text)}
     <button class="menu-btn" aria-expanded="false" aria-controls="mmenu">Menu</button>
   </div>
   <nav class="mobile-menu" id="mmenu" aria-label="Menu móvel">
+    <a href="#ia">IA</a>
     <a href="#servicos">Competências</a>
     <a href="#projetos">Projetos</a>
     <a href="#sobre">Sobre</a>
@@ -287,10 +308,61 @@ footer a:hover{color:var(--text)}
 
 <section class="proof" aria-label="Resultados">
   <div class="wrap">
-    <div class="proof-item"><strong>Recorde</strong><p>de faturamento diário na Tudo de Filtro após estruturar o marketing</p></div>
-    <div class="proof-item"><strong>4x</strong><p>no faturamento diário da Grego Metal com mídia e marketplaces</p></div>
+    <div class="proof-item"><strong>Recorde</strong><p>de faturamento diário numa varejista de produtos para tratamento de água</p></div>
+    <div class="proof-item"><strong>4x</strong><p>no faturamento diário de uma marca de produtos para casa, como kits de banheiro</p></div>
     <div class="proof-item"><strong>4 anos</strong><p>em marketing, growth e performance digital</p></div>
     <div class="proof-item"><strong>Em produção</strong><p>agentes de IA e automações integrados aos sistemas, com aprovação humana</p></div>
+  </div>
+</section>
+
+<section class="block ai" id="ia">
+  <div class="wrap">
+    <div class="head">
+      <h2>IA aplicada, em uso de verdade</h2>
+      <p>Ferramentas que construí para resolver problemas reais de marketing e vendas. Não são testes de prompt: estão conectadas aos dados e aos sistemas da operação.</p>
+    </div>
+    <div class="ai-grid">
+      <article class="ai-card big">
+        <div class="ai-top"><span>claude + mcp · zoho crm</span><span class="status">em uso</span></div>
+        <div class="ai-in">
+          <h3>Auditoria de CRM com IA</h3>
+          <p>Conectei o Claude ao Zoho CRM por meio de um servidor MCP. Com isso, a IA lê a estrutura e os dados do CRM e entrega um diagnóstico que levaria dias para montar na mão.</p>
+          <ul class="key">
+            <li>Métricas de cada campo e taxa de preenchimento por módulo</li>
+            <li>Conflitos entre regras de workflow que disparavam ações contraditórias</li>
+            <li>Comportamento dos vendedores no funil: onde param, o que deixam de registrar</li>
+            <li>Base para a re-implantação do CRM a partir de dados, não de suposição</li>
+          </ul>
+          <div class="tools"><span>Claude</span><span>MCP</span><span>Zoho CRM API</span></div>
+        </div>
+      </article>
+      <article class="ai-card">
+        <div class="ai-top"><span>agente · marketing growth</span><span class="status">em uso</span></div>
+        <div class="ai-in">
+          <h3>Marketing Growth</h3>
+          <p>Agente e painel em um só lugar: dashboards em tempo real das campanhas, com edição feita ali mesmo, sem abrir cada plataforma.</p>
+          <ul class="key">
+            <li>Relatórios de tráfego pago gerados automaticamente</li>
+            <li>Material de apoio para o time de vendas</li>
+            <li>Análise de métricas das redes sociais</li>
+          </ul>
+          <div class="tools"><span>Claude</span><span>Meta Ads</span><span>Google Ads</span><span>Instagram</span></div>
+        </div>
+      </article>
+      <article class="ai-card">
+        <div class="ai-top"><span>pipeline · vídeo</span><span class="status dev">em desenvolvimento</span></div>
+        <div class="ai-in">
+          <h3>Motor de vídeos virais</h3>
+          <p>Do roteiro ao arquivo final sem editor humano no meio do caminho.</p>
+          <ul class="key">
+            <li>Monta o roteiro e cria as imagens</li>
+            <li>Edita e sincroniza as animações com as batidas da música</li>
+            <li>Renderiza o vídeo pronto para publicar</li>
+          </ul>
+          <div class="tools"><span>Roteiro</span><span>Geração de imagem</span><span>Motion</span><span>Render</span></div>
+        </div>
+      </article>
+    </div>
   </div>
 </section>
 
