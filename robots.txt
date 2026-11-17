@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://manrrique-studio.github.io/sitemap.xml
